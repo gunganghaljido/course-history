@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CourseHistory {
+  businessId       String
+  facilityName     String
+  itemCode         String
+  itemName         String
+  address          String
+  detailAddress    String?
+  courseName       String
+  courseId         String
+  startDate        DateTime @db.Date
+  endDate          DateTime @db.Date
+  participantCount Int
+  price            Int
+
+  @@id([courseId, startDate])
+}
