@@ -1,5 +1,5 @@
 node_modules
 .env
-history.json
+*history.json
 env/
 package-lock.json
