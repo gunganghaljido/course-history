@@ -37,6 +37,11 @@ model SpecialCourseHistory {
   endDate          DateTime @db.Date
   participantCount Int
   price            Int
+  cityCode         String
+  cityName         String
+  localCode        String
+  localName        String
+  phone            String?
 
-  @@id([courseId, startDate])
+  @@id([businessId, courseId, startDate])
 }

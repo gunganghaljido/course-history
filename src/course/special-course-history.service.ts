@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import { CourseJson } from './types';
+import type { PrismaClient } from '@prisma/client';
+import type { CourseJson } from './types';
 
-export class CourseHistoryService {
+export class SpecialCourseHistoryService {
   private prisma: PrismaClient;
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
@@ -11,11 +11,7 @@ export class CourseHistoryService {
     const courses = [];
 
     for (const course of data) {
-      if (
-        course.COURSE_BEGIN_DE === null ||
-        course.COURSE_END_DE === null ||
-        course.COURSE_REQST_NMPR_CO === '0'
-      ) {
+      if (course.COURSE_BEGIN_DE === null || course.COURSE_END_DE === null) {
         continue;
       }
       const startDateStr = String(course.COURSE_BEGIN_DE);
@@ -30,6 +26,18 @@ export class CourseHistoryService {
         6
       )}-${endDateStr.slice(6, 8)}`;
 
+      if (course.CTPRVN_CD === '45') {
+        course.CTPRVN_CD = '52';
+        if (course.SIGNGU_CD.substring(0, 2) === '45') {
+          course.SIGNGU_CD = '52' + course.SIGNGU_CD.substring(2);
+        }
+      } else if (course.CTPRVN_CD === '42') {
+        course.CTPRVN_CD = '51';
+        if (course.SIGNGU_CD.substring(0, 2) === '51') {
+          course.SIGNGU_CD = '51' + course.SIGNGU_CD.substring(2);
+        }
+      }
+
       courses.push({
         businessId: course.BSNS_NO,
         facilityName: course.FCLTY_NM,
@@ -43,10 +51,15 @@ export class CourseHistoryService {
         endDate: new Date(endDate),
         participantCount: Number(course.COURSE_REQST_NMPR_CO),
         price: Number(course.COURSE_PRC),
+        cityCode: course.CTPRVN_CD,
+        cityName: course.CTPRVN_NM,
+        localCode: course.SIGNGU_CD,
+        localName: course.SIGNGU_NM,
+        phone: course.TEL_NO,
       });
     }
 
-    await this.prisma.courseHistory.createMany({
+    await this.prisma.specialCourseHistory.createMany({
       data: courses,
       skipDuplicates: true,
     });

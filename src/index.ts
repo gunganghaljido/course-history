@@ -1,4 +1,5 @@
 import { CourseHistoryService } from './course/course-history.service';
+import { SpecialCourseHistoryService } from './course/special-course-history.service';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
@@ -8,6 +9,7 @@ dotenv.config();
 async function main() {
   const prisma = new PrismaClient();
   const courseHistoryService = new CourseHistoryService(prisma);
+  const specialCourseHistoryService = new SpecialCourseHistoryService(prisma);
 
   const normalData = JSON.parse(
     fs.readFileSync(
@@ -24,8 +26,8 @@ async function main() {
   );
 
   await Promise.all([
-    courseHistoryService.saveNormal(normalData),
-    courseHistoryService.saveSpecial(specialData),
+    courseHistoryService.save(normalData),
+    specialCourseHistoryService.save(specialData),
   ]);
 }
 
