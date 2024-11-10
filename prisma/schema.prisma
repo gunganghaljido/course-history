@@ -24,6 +24,18 @@ model CourseHistory {
   @@id([courseId, startDate])
 }
 
+model SpecialFacility {
+  businessId    String  @id
+  name          String
+  cityCode      String
+  cityName      String
+  localCode     String
+  localName     String
+  address       String
+  detailAddress String?
+  phone         String?
+}
+
 model SpecialCourseHistory {
   businessId       String
   facilityName     String

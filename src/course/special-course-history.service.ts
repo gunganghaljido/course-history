@@ -63,5 +63,48 @@ export class SpecialCourseHistoryService {
       data: courses,
       skipDuplicates: true,
     });
+
+    await this.saveSpecialFacility();
+  }
+
+  async saveSpecialFacility() {
+    const businessIds = await this.prisma.specialCourseHistory.findMany({
+      select: {
+        businessId: true,
+      },
+      distinct: ['businessId'],
+    });
+
+    const facilities = [];
+
+    for (const { businessId } of businessIds) {
+      const courseHistory =
+        await this.prisma.specialCourseHistory.findFirstOrThrow({
+          where: {
+            businessId,
+          },
+          orderBy: {
+            startDate: 'desc',
+          },
+        });
+
+      facilities.push({
+        businessId,
+        name: courseHistory.facilityName,
+        cityCode: courseHistory.cityCode,
+        cityName: courseHistory.cityName,
+        localCode: courseHistory.localCode,
+        localName: courseHistory.localName,
+        address: courseHistory.address,
+        detailAddress: courseHistory.detailAddress,
+        phone: courseHistory.phone,
+      });
+    }
+
+    await this.prisma.specialFacility.deleteMany();
+
+    await this.prisma.specialFacility.createMany({
+      data: facilities,
+    });
   }
 }
